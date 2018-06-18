@@ -1,0 +1,261 @@
+version: '3.6'
+
+services:
+  db:
+    image: postgres:9.6.9-alpine
+    hostname: db
+    labels:
+      - traefik.enable=false
+    volumes:
+      - db_data:/var/lib/postgresql
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '25.000'
+          memory: 1024M
+        reservations:
+          cpus: '25.000'
+          memory: 512M
+    environment:
+      POSTGRES_DB: dev-node
+      POSTGRES_USER: node
+      POSTGRES_PASSWORD: nodejs
+    networks:
+      - db-private
+      - app-private
+      - internal-monitoring
+    ports:
+      - "5432:5432"
+  
+  redis:
+    image: redis:4.0-alpine
+    hostname: redis
+    labels:
+      - traefik.enable=false
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '25.000'
+          memory: 1024M
+        reservations:
+          cpus: '25.000'
+          memory: 512M
+    networks:
+      - cache-private
+      - app-private
+      - internal-monitoring
+    ports:
+      - "6379:6379"
+
+  api:
+    image: quay.io/perriea/needpc-api:latest
+    hostname: api
+    labels:
+      - traefik.enable=true
+      - traefik.backend=api
+      - traefik.frontend.rule=Host:api.needpc.fr
+      - traefik.docker.network=app-private
+      - traefik.port=8080
+    depends_on:
+      - db
+      - redis
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '45.000'
+          memory: 512M
+        reservations:
+          cpus: '5.000'
+          memory: 64M
+    environment:
+      - NODE_ENV=development
+      - APP_SESSION_SECRET=RANsDOM
+      - APP_REDIS_HOST=redis
+    networks:
+      - app-private
+      - internal-monitoring
+    ports:
+      - "8000:8080"
+
+  front:
+    image: quay.io/perriea/needpc-front:0.0.1
+    hostname: front
+    labels:
+      - traefik.enable=true
+      - traefik.backend=front
+      - traefik.frontend.rule=Host:www.needpc.fr
+      - traefik.frontend.rule=Host:needpc.fr
+      - traefik.docker.network=app-private
+      - traefik.port=4200
+    depends_on:
+      - api
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '25.000'
+          memory: 512M
+        reservations:
+          cpus: '4.000'
+          memory: 64M
+    networks:
+      - app-private
+      - internal-monitoring
+    ports:
+      - "4200:8080"
+
+  traefik:
+    image: traefik:v1.6.4-alpine
+    hostname: traefik
+    labels:
+      - "traefik.enable=false"
+    depends_on:
+      - api
+      - front
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 1
+        window: 120s
+      resources:
+        limits:
+          cpus: '20.000'
+          memory: 512M
+      placement:
+        constraints:
+         - node.role == manager
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    configs:
+      - source: config_traefik
+        target: /etc/traefik/traefik.toml
+    networks:
+      - public
+      - app-private
+      - internal-monitoring
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+
+  influxdb:
+    image: influxdb:1.5.3-alpine
+    hostname: influxdb
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 1
+        window: 120s
+      resources:
+        limits:
+          cpus: '25.000'
+          memory: 512M
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+    configs:
+      - source: config_influxdb
+        target: /etc/influxdb/influxdb.conf
+    networks:
+      - internal-monitoring
+
+  grafana:
+    image: grafana/grafana:5.1.3
+    hostname: grafana
+    labels:
+      - traefik.enable=true
+      - traefik.backend=grafana
+      - traefik.frontend.rule=Host:monitoring.needpc.fr
+      - traefik.docker.network=internal-monitoring
+      - traefik.port=3000
+    depends_on:
+      - influxdb
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '25.000'
+          memory: 512M
+        reservations:
+          cpus: '4.000'
+          memory: 64M
+    networks:
+      - app-private
+      - internal-monitoring
+    ports:
+      - "3000:3000"
+
+  telegraf:
+    image: telegraf:1.7.0-alpine
+    hostname: telegraf
+    depends_on:
+      - influxdb
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 1
+        window: 120s
+      resources:
+        limits:
+          cpus: '10.000'
+          memory: 256M
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    configs:
+      - source: config_telegraf
+        target: /etc/telegraf/telegraf-2.conf
+    networks:
+      - internal-monitoring
+      - db-private
+
+configs:
+  config_telegraf:
+    file: configs/telegraf.conf
+  config_influxdb:
+    file: configs/influxdb.conf
+  config_traefik:
+    file: configs/traefik.toml
+
+volumes:
+    db_data: {}
+    influxdb_data: {}
+
+networks:
+  public:
+    driver: overlay
+    external: true
+  app-private: {}
+  db-private: {}
+  cache-private: {}
+  internal-monitoring: {}

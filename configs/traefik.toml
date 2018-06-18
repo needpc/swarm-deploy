@@ -1,0 +1,36 @@
+debug = false
+
+logLevel = "ERROR"
+defaultEntryPoints = ["http", "https"]
+
+# Generate Hash: https://www.askapache.com/online-tools/htpasswd-generator/
+[web]
+address = ":8080"
+[web.auth.basic]
+users = ["admin:$apr1$3ybtl8zp$GXOO2GpgRJAU5MRTQGQQ.1"]
+
+[entryPoints]
+    [entryPoints.http]
+    address = ":80"
+        [entryPoints.http.redirect]
+        entryPoint = "https"
+    [entryPoints.https]
+    address = ":443"
+    [entryPoints.https.tls]
+
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "needpc.fr"
+watch = true
+exposedbydefault = false
+swarmmode = true
+  
+[acme]  
+email = "a.perrier89@gmail.com"  
+storage = "/etc/traefik/acme.json"
+entryPoint = "https"
+onHostRule = true
+[acme.httpChallenge]
+entryPoint = "http"
