@@ -234,7 +234,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     configs:
       - source: config_telegraf
-        target: /etc/telegraf/telegraf-2.conf
+        target: /etc/telegraf/telegraf.conf
     networks:
       - internal-monitoring
       - db-private
