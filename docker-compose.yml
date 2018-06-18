@@ -56,16 +56,16 @@ services:
   api:
     image: quay.io/perriea/needpc-api:latest
     hostname: api
-    labels:
-      traefik.enable: "true"
-      traefik.port: "8080"
-      traefik.backend: "api"
-      traefik.docker.network: "app-private"
-      traefik.frontend.rule: "Host:api.needpc.fr"
     depends_on:
       - db
       - redis
     deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.port: "8080"
+        traefik.backend: "api"
+        traefik.docker.network: "app-private"
+        traefik.frontend.rule: "Host:api.needpc.fr"
       replicas: 1
       restart_policy:
         condition: on-failure
@@ -89,14 +89,14 @@ services:
   front:
     image: quay.io/perriea/needpc-front:0.0.1
     hostname: front
-    labels:
-      traefik.enable: "true"
-      traefik.port: "4200"
-      traefik.docker.network: "app-private"
-      traefik.frontend.rule: "Host:www.needpc.fr"
     depends_on:
       - api
     deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.port: "4200"
+        traefik.docker.network: "app-private"
+        traefik.frontend.rule: "Host:www.needpc.fr"
       replicas: 1
       restart_policy:
         condition: on-failure
@@ -119,12 +119,12 @@ services:
   traefik:
     image: traefik:v1.6.4-alpine
     hostname: traefik
-    labels:
-      traefik.enable: "false"
     depends_on:
       - api
       - front
     deploy:
+      labels:
+        traefik.enable: "false"
       replicas: 1
       restart_policy:
         condition: on-failure
@@ -155,9 +155,9 @@ services:
   influxdb:
     image: influxdb:1.5.3-alpine
     hostname: influxdb
-    labels:
-      traefik.enable: "false"
     deploy:
+      labels:
+        traefik.enable: "false"
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -178,14 +178,14 @@ services:
   grafana:
     image: grafana/grafana:5.1.3
     hostname: grafana
-    labels:
-      traefik.enable: "true"
-      traefik.port: "3000"
-      traefik.docker.network: "internal-monitoring"
-      traefik.frontend.rule: "Host:monitoring.needpc.fr"
     depends_on:
       - influxdb
     deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.port: "3000"
+        traefik.docker.network: "internal-monitoring"
+        traefik.frontend.rule: "Host:monitoring.needpc.fr"
       replicas: 1
       restart_policy:
         condition: on-failure
@@ -205,11 +205,11 @@ services:
   telegraf:
     image: telegraf:1.7.0-alpine
     hostname: telegraf
-    labels:
-      traefik.enable: "false"
     depends_on:
       - influxdb
     deploy:
+      labels:
+        traefik.enable: "false"
       restart_policy:
         condition: on-failure
         delay: 5s
