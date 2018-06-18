@@ -5,7 +5,7 @@ services:
     image: postgres:9.6.9-alpine
     hostname: db
     labels:
-      - traefik.enable=false
+      traefik.enable: "false"
     volumes:
       - db_data:/var/lib/postgresql
     deploy:
@@ -34,7 +34,7 @@ services:
     image: redis:4.0-alpine
     hostname: redis
     labels:
-      - traefik.enable=false
+      traefik.enable: "false"
     deploy:
       replicas: 1
       restart_policy:
@@ -57,11 +57,11 @@ services:
     image: quay.io/perriea/needpc-api:latest
     hostname: api
     labels:
-      - traefik.enable=true
-      - traefik.backend=api
-      - traefik.frontend.rule=Host:api.needpc.fr
-      - traefik.docker.network=app-private
-      - traefik.port=8080
+      traefik.enable: "true"
+      traefik.port: "8080"
+      traefik.backend: "api"
+      traefik.docker.network: "app-private"
+      traefik.frontend.rule: "Host:api.needpc.fr"
     depends_on:
       - db
       - redis
@@ -90,12 +90,10 @@ services:
     image: quay.io/perriea/needpc-front:0.0.1
     hostname: front
     labels:
-      - traefik.enable=true
-      - traefik.backend=front
-      - traefik.frontend.rule=Host:www.needpc.fr
-      - traefik.frontend.rule=Host:needpc.fr
-      - traefik.docker.network=app-private
-      - traefik.port=4200
+      traefik.enable: "true"
+      traefik.port: "4200"
+      traefik.docker.network: "app-private"
+      traefik.frontend.rule: "Host:www.needpc.fr"
     depends_on:
       - api
     deploy:
@@ -122,7 +120,7 @@ services:
     image: traefik:v1.6.4-alpine
     hostname: traefik
     labels:
-      - "traefik.enable=false"
+      traefik.enable: "false"
     depends_on:
       - api
       - front
@@ -157,6 +155,8 @@ services:
   influxdb:
     image: influxdb:1.5.3-alpine
     hostname: influxdb
+    labels:
+      traefik.enable: "false"
     deploy:
       restart_policy:
         condition: on-failure
@@ -179,11 +179,10 @@ services:
     image: grafana/grafana:5.1.3
     hostname: grafana
     labels:
-      - traefik.enable=true
-      - traefik.backend=grafana
-      - traefik.frontend.rule=Host:monitoring.needpc.fr
-      - traefik.docker.network=internal-monitoring
-      - traefik.port=3000
+      traefik.enable: "true"
+      traefik.port: "3000"
+      traefik.docker.network: "internal-monitoring"
+      traefik.frontend.rule: "Host:monitoring.needpc.fr"
     depends_on:
       - influxdb
     deploy:
@@ -206,6 +205,8 @@ services:
   telegraf:
     image: telegraf:1.7.0-alpine
     hostname: telegraf
+    labels:
+      traefik.enable: "false"
     depends_on:
       - influxdb
     deploy:
