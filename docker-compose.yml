@@ -50,8 +50,6 @@ services:
       - cache-private
       - app-private
       - internal-monitoring
-    ports:
-      - "6379:6379"
 
   api:
     image: quay.io/perriea/needpc-api:latest
@@ -83,8 +81,6 @@ services:
     networks:
       - app-private
       - internal-monitoring
-    ports:
-      - "8000:8080"
 
   front:
     image: quay.io/perriea/needpc-front:0.0.1
@@ -113,8 +109,6 @@ services:
     networks:
       - app-private
       - internal-monitoring
-    ports:
-      - "4200:8080"
 
   traefik:
     image: traefik:v1.6.4-alpine
@@ -199,8 +193,6 @@ services:
     networks:
       - app-private
       - internal-monitoring
-    ports:
-      - "3000:3000"
 
   telegraf:
     image: telegraf:1.7.0-alpine
