@@ -19,9 +19,6 @@ services:
         limits:
           cpus: '25.000'
           memory: 1024M
-        reservations:
-          cpus: '25.000'
-          memory: 512M
     environment:
       POSTGRES_DB: dev-node
       POSTGRES_USER: node
@@ -49,9 +46,6 @@ services:
         limits:
           cpus: '25.000'
           memory: 1024M
-        reservations:
-          cpus: '25.000'
-          memory: 512M
     networks:
       - cache-private
       - app-private
@@ -82,12 +76,9 @@ services:
         limits:
           cpus: '45.000'
           memory: 512M
-        reservations:
-          cpus: '5.000'
-          memory: 64M
     environment:
       - NODE_ENV=development
-      - APP_SESSION_SECRET=RANsDOM
+      - APP_SESSION_SECRET=RANDOM
       - APP_REDIS_HOST=redis
     networks:
       - app-private
@@ -118,9 +109,9 @@ services:
         limits:
           cpus: '25.000'
           memory: 512M
-        reservations:
-          cpus: '4.000'
-          memory: 64M
+      placement:
+        constraints:
+         - node.role == manager
     networks:
       - app-private
       - internal-monitoring
@@ -206,9 +197,6 @@ services:
         limits:
           cpus: '25.000'
           memory: 512M
-        reservations:
-          cpus: '4.000'
-          memory: 64M
     networks:
       - app-private
       - internal-monitoring

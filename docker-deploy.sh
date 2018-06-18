@@ -1,4 +1,4 @@
 #!/bin/bash
 
-docker network create --driver=overlay traefik-net
+docker network create --driver=overlay public
 docker stack deploy -c docker-compose.yml gpe
