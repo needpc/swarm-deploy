@@ -12,13 +12,9 @@ users = ["admin:$apr1$3ybtl8zp$GXOO2GpgRJAU5MRTQGQQ.1"]
 [entryPoints]
     [entryPoints.http]
     address = ":80"
-        [entryPoints.http.redirect]
-        entryPoint = "https"
     [entryPoints.https]
     address = ":443"
     [entryPoints.https.tls]
-
-[retry]
 
 [docker]
 endpoint = "unix:///var/run/docker.sock"
@@ -31,6 +27,9 @@ swarmmode = true
 email = "a.perrier89@gmail.com"  
 storage = "/etc/traefik/acme.json"
 entryPoint = "https"
-onHostRule = true
+onHostRule = false
 [acme.httpChallenge]
 entryPoint = "http"
+[[acme.domains]]
+    main = "*.needpc.fr"
+    sans = ["api.needpc.fr"]
