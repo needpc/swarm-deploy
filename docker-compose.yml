@@ -20,7 +20,7 @@ services:
           cpus: '25.000'
           memory: 1024M
     environment:
-      POSTGRES_DB: dev-node
+      POSTGRES_DB: needpc
       POSTGRES_USER: node
       POSTGRES_PASSWORD: nodejs
     networks:
