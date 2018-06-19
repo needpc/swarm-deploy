@@ -1,0 +1,11 @@
+{
+    "production": {
+      "username": "node",
+      "password": "nodejs",
+      "database": "needpc",
+      "host": "db",
+      "dialect": "postgres",
+      "ssl": false
+    }
+}
+  

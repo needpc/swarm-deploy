@@ -75,9 +75,12 @@ services:
           cpus: '45.000'
           memory: 512M
     environment:
-      - NODE_ENV=development
-      - APP_SESSION_SECRET=RANDOM
+      - NODE_ENV=production
+      - APP_SESSION_SECRET=QtwBZcyVfhVKDHTzxQPUf2Rr
       - APP_REDIS_HOST=redis
+    configs:
+      - source: config_api
+        target: /srv/app/app/config/config.json
     networks:
       - app-private
       - internal-monitoring
@@ -227,6 +230,8 @@ configs:
     file: configs/influxdb.conf
   config_traefik:
     file: configs/traefik.toml
+  config_api:
+    file: configs/config.json
 
 volumes:
     db_data: {}
