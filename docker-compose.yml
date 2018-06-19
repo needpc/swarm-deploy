@@ -7,7 +7,7 @@ services:
     labels:
       traefik.enable: "false"
     volumes:
-      - db_data:/var/lib/postgresql
+      - /tmp/postgresql:/var/lib/postgresql
     deploy:
       replicas: 1
       restart_policy:
@@ -165,7 +165,7 @@ services:
           cpus: '25.000'
           memory: 512M
     volumes:
-      - influxdb_data:/var/lib/influxdb
+      - /tmp/influxdb:/var/lib/influxdb
     configs:
       - source: config_influxdb
         target: /etc/influxdb/influxdb.conf
@@ -232,10 +232,6 @@ configs:
     file: configs/traefik.toml
   config_api:
     file: configs/config.json
-
-volumes:
-    db_data: {}
-    influxdb_data: {}
 
 networks:
   public:
