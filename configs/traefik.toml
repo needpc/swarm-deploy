@@ -34,5 +34,6 @@ entryPoint = "http"
 provider = "cloudflare"
 delayBeforeCheck = 0
 [[acme.domains]]
-    main = "*.needpc.fr"
-    sans = ["api.needpc.fr"]
+   main = "needpc.fr"
+[[acme.domains]]
+   main = "*.needpc.fr"
