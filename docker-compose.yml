@@ -106,6 +106,9 @@ services:
       placement:
         constraints:
          - node.role == manager
+    environment:
+      - CLOUDFLARE_EMAIL=a.perrier89@gmail.com
+      - CLOUDFLARE_API_KEY=81a86a9cd11eed5efac2055dc67a13c293943
     networks:
       - app-private
       - internal-monitoring

@@ -30,6 +30,9 @@ entryPoint = "https"
 onHostRule = false
 [acme.httpChallenge]
 entryPoint = "http"
+[acme.dnsChallenge]
+provider = "cloudflare"
+delayBeforeCheck = 0
 [[acme.domains]]
     main = "*.needpc.fr"
     sans = ["api.needpc.fr"]
