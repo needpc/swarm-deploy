@@ -95,7 +95,7 @@ services:
         traefik.enable: "true"
         traefik.port: "4200"
         traefik.docker.network: "app-private"
-        traefik.frontend.rule: "Host:www.needpc.fr"
+        traefik.frontend.rule: "Host:www.needpc.fr,m.needpc.fr"
       replicas: 3
       restart_policy:
         condition: on-failure
