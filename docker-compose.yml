@@ -64,7 +64,7 @@ services:
         traefik.backend: "api"
         traefik.docker.network: "app-private"
         traefik.frontend.rule: "Host:api.needpc.fr"
-      replicas: 1
+      replicas: 3
       restart_policy:
         condition: on-failure
         delay: 5s
