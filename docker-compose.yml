@@ -244,6 +244,8 @@ configs:
     file: configs/config.json
   config_grafana:
     file: configs/grafana.ini
+  config_front:
+    file: configs/front.conf
 
 networks:
   public:
