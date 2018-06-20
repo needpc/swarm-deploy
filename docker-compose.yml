@@ -86,7 +86,7 @@ services:
       - internal-monitoring
 
   front:
-    image: quay.io/perriea/needpc-front:0.0.2
+    image: quay.io/perriea/needpc-front:0.0.3
     hostname: front
     depends_on:
       - api
@@ -106,6 +106,9 @@ services:
         limits:
           cpus: '25.000'
           memory: 512M
+    configs:
+      - source: config_front
+        target: /etc/nginx/conf.d/default.conf
     networks:
       - app-private
       - internal-monitoring
