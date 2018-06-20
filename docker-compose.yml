@@ -52,7 +52,7 @@ services:
       - internal-monitoring
 
   api:
-    image: quay.io/perriea/needpc-api:0.0.1
+    image: quay.io/perriea/needpc-api:0.0.2
     hostname: api
     depends_on:
       - db
