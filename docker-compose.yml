@@ -182,8 +182,8 @@ services:
         traefik.enable: "true"
         traefik.port: "3000"
         traefik.docker.network: "internal-monitoring"
-        traefik.frontend.rule: "Host:monitoring.needpc.fr"
-      replicas: 2
+        traefik.frontend.rule: "Host:grafana.needpc.fr"
+      replicas: 1
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -193,6 +193,13 @@ services:
         limits:
           cpus: '25.000'
           memory: 512M
+    volumes:
+      - /tmp/grafana:/var/lib/grafana
+    environment:
+      - GF_SERVER_ROOT_URL=https://grafana.needpc.fr
+    configs:
+      - source: config_grafana
+        target: /etc/grafana/grafana.ini
     networks:
       - app-private
       - internal-monitoring
@@ -232,6 +239,8 @@ configs:
     file: configs/traefik.toml
   config_api:
     file: configs/config.json
+  config_grafana:
+    file: configs/grafana.ini
 
 networks:
   public:
