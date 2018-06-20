@@ -93,7 +93,7 @@ services:
     deploy:
       labels:
         traefik.enable: "true"
-        traefik.port: "4200"
+        traefik.port: "80"
         traefik.docker.network: "app-private"
         traefik.frontend.rule: "Host:www.needpc.fr,m.needpc.fr"
       replicas: 3
