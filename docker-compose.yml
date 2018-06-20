@@ -96,7 +96,7 @@ services:
         traefik.port: "4200"
         traefik.docker.network: "app-private"
         traefik.frontend.rule: "Host:www.needpc.fr"
-      replicas: 1
+      replicas: 3
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -183,7 +183,7 @@ services:
         traefik.port: "3000"
         traefik.docker.network: "internal-monitoring"
         traefik.frontend.rule: "Host:monitoring.needpc.fr"
-      replicas: 1
+      replicas: 2
       restart_policy:
         condition: on-failure
         delay: 5s
