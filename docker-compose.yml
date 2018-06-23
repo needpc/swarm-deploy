@@ -83,7 +83,6 @@ services:
       placement:
         constraints:
           - node.role == manager
-          - node.role == worker
     environment:
       - NODE_ENV=production
       - APP_SESSION_SECRET=QtwBZcyVfhVKDHTzxQPUf2Rr
