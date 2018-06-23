@@ -90,8 +90,7 @@ services:
         target: /srv/app/app/config/config.json
     networks:
       - app-private
-      - internal-monitoring
-      - prod_public
+      - public
 
   front:
     image: quay.io/perriea/needpc-front:0.0.3
@@ -119,13 +118,16 @@ services:
           - node.role == worker
     networks:
       - app-private
-      - prod_public
+      - public
 
 configs:
   config_api:
     file: configs/config.json
 
 networks:
+  public:
+    driver: overlay
+    external: true
   app-private: {}
   db-private: {}
   cache-private: {}
