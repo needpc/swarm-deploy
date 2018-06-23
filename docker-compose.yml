@@ -131,7 +131,6 @@ services:
     depends_on:
       - api
       - front
-      - consul
     deploy:
       labels:
         traefik.enable: "false"
@@ -164,28 +163,6 @@ services:
       - "80:80"
       - "443:443"
       - "40030:40030"
-
-  consul:
-    image: consul:1.1.0
-    hostname: consul
-    deploy:
-      labels:
-        traefik.enable: "false"
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 1
-        window: 120s
-      resources:
-        limits:
-          cpus: '15.000'
-          memory: 256M
-      placement:
-        constraints:
-         - node.role == worker
-    networks:
-      - app-private
 
   influxdb:
     image: influxdb:1.5.3-alpine
