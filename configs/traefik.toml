@@ -5,7 +5,7 @@ defaultEntryPoints = ["http", "https"]
 
 # Generate Hash: https://www.askapache.com/online-tools/htpasswd-generator/
 [web]
-address = ":8080"
+address = ":40030"
 [web.auth.basic]
 users = ["admin:$apr1$3ybtl8zp$GXOO2GpgRJAU5MRTQGQQ.1"]
 
@@ -22,6 +22,11 @@ domain = "needpc.fr"
 watch = true
 exposedbydefault = false
 swarmmode = true
+
+[consul]
+endpoint = "consul:8500"
+watch = true
+prefix = "traefik"
   
 [acme]  
 email = "a.perrier89@gmail.com"  

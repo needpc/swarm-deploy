@@ -7,7 +7,7 @@ services:
     labels:
       traefik.enable: "false"
     volumes:
-      - /tmp/postgresql:/var/lib/postgresql
+      - /var/lib/postgresql:/var/lib/postgresql
     deploy:
       replicas: 1
       restart_policy:
@@ -19,6 +19,9 @@ services:
         limits:
           cpus: '25.000'
           memory: 1024M
+      placement:
+        constraints:
+          - node.role == manager
     environment:
       POSTGRES_DB: needpc
       POSTGRES_USER: node
@@ -46,6 +49,9 @@ services:
         limits:
           cpus: '25.000'
           memory: 1024M
+      placement:
+        constraints:
+          - node.role == worker
     networks:
       - cache-private
       - app-private
@@ -74,6 +80,10 @@ services:
         limits:
           cpus: '45.000'
           memory: 512M
+      placement:
+        constraints:
+          - node.role == manager
+          - node.role == worker
     environment:
       - NODE_ENV=production
       - APP_SESSION_SECRET=QtwBZcyVfhVKDHTzxQPUf2Rr
@@ -104,21 +114,25 @@ services:
         window: 120s
       resources:
         limits:
-          cpus: '25.000'
-          memory: 512M
+          cpus: '5.000'
+          memory: 256M
+      placement:
+        constraints:
+          - node.role == worker
     configs:
       - source: config_front
         target: /etc/nginx/conf.d/default.conf
     networks:
       - app-private
       - internal-monitoring
-
+  
   traefik:
     image: traefik:v1.6.4-alpine
     hostname: traefik
     depends_on:
       - api
       - front
+      - consul
     deploy:
       labels:
         traefik.enable: "false"
@@ -152,6 +166,28 @@ services:
       - "443:443"
       - "8080:8080"
 
+  consul:
+    image: consul:1.1.0
+    hostname: consul
+    deploy:
+      labels:
+        traefik.enable: "false"
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 1
+        window: 120s
+      resources:
+        limits:
+          cpus: '15.000'
+          memory: 256M
+      placement:
+        constraints:
+         - node.role == worker
+    networks:
+      - internal-monitoring
+
   influxdb:
     image: influxdb:1.5.3-alpine
     hostname: influxdb
@@ -167,8 +203,11 @@ services:
         limits:
           cpus: '25.000'
           memory: 512M
+      placement:
+        constraints:
+         - node.role == manager
     volumes:
-      - /tmp/influxdb:/var/lib/influxdb
+      - /var/lib/influxdb:/var/lib/influxdb
     configs:
       - source: config_influxdb
         target: /etc/influxdb/influxdb.conf
@@ -196,8 +235,11 @@ services:
         limits:
           cpus: '25.000'
           memory: 512M
+      placement:
+        constraints:
+         - node.role == worker
     volumes:
-      - /tmp/grafana:/var/lib/grafana
+      - /var/lib/grafana:/var/lib/grafana
     environment:
       - GF_SERVER_ROOT_URL=https://grafana.needpc.fr
     configs:
@@ -213,6 +255,7 @@ services:
     depends_on:
       - influxdb
     deploy:
+      mode: global
       labels:
         traefik.enable: "false"
       restart_policy:
