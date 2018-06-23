@@ -65,7 +65,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.port: "8080"
-        traefik.backend: "api"
+        traefik.backend: "alpha-api"
         traefik.docker.network: "app-private"
         traefik.frontend.rule: "Host:alpha-api.needpc.fr"
       replicas: 3
@@ -101,6 +101,7 @@ services:
       labels:
         traefik.enable: "true"
         traefik.port: "80"
+        traefik.backend: "alpha"
         traefik.docker.network: "app-private"
         traefik.frontend.rule: "Host:alpha.needpc.fr"
       replicas: 1
