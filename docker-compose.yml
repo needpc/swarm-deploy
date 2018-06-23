@@ -185,7 +185,7 @@ services:
         constraints:
          - node.role == worker
     networks:
-      - internal-monitoring
+      - app-private
 
   influxdb:
     image: influxdb:1.5.3-alpine
