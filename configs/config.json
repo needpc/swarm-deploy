@@ -6,6 +6,14 @@
       "host": "db",
       "dialect": "postgres",
       "ssl": false
+    },
+    "alpha": {
+      "username": "node",
+      "password": "nodejs",
+      "database": "needpc-alpha",
+      "host": "db",
+      "dialect": "postgres",
+      "ssl": false
     }
 }
   

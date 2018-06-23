@@ -1,0 +1,131 @@
+version: '3.6'
+
+services:
+  db:
+    image: postgres:9.6.9-alpine
+    hostname: db
+    labels:
+      traefik.enable: "false"
+    volumes:
+      - /var/lib/postgresql-alpha:/var/lib/postgresql
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '25.000'
+          memory: 1024M
+      placement:
+        constraints:
+          - node.role == manager
+    environment:
+      POSTGRES_DB: needpc-alpha
+      POSTGRES_USER: node
+      POSTGRES_PASSWORD: nodejs
+    networks:
+      - db-private
+      - app-private
+    ports:
+      - "52432:5432"
+  
+  redis:
+    image: redis:4.0-alpine
+    hostname: redis
+    labels:
+      traefik.enable: "false"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '25.000'
+          memory: 1024M
+      placement:
+        constraints:
+          - node.role == worker
+    networks:
+      - cache-private
+      - app-private
+
+  api:
+    image: quay.io/perriea/needpc-api:0.0.3
+    hostname: api
+    depends_on:
+      - db
+      - redis
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.port: "8080"
+        traefik.backend: "api"
+        traefik.docker.network: "app-private"
+        traefik.frontend.rule: "Host:alpha-api.needpc.fr"
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '45.000'
+          memory: 512M
+      placement:
+        constraints:
+          - node.role == manager
+    environment:
+      - NODE_ENV=alpha
+      - APP_SESSION_SECRET=MWMLetWesZCdPq4y
+      - APP_REDIS_HOST=redis
+    configs:
+      - source: config_api
+        target: /srv/app/app/config/config.json
+    networks:
+      - app-private
+      - internal-monitoring
+      - prod_public
+
+  front:
+    image: quay.io/perriea/needpc-front:0.0.3
+    hostname: front
+    depends_on:
+      - api
+    deploy:
+      labels:
+        traefik.enable: "true"
+        traefik.port: "80"
+        traefik.docker.network: "app-private"
+        traefik.frontend.rule: "Host:alpha.needpc.fr"
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          cpus: '5.000'
+          memory: 256M
+      placement:
+        constraints:
+          - node.role == worker
+    networks:
+      - app-private
+      - prod_public
+
+configs:
+  config_api:
+    file: configs/config.json
+
+networks:
+  app-private: {}
+  db-private: {}
+  cache-private: {}
