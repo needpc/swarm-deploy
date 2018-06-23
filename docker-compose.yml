@@ -118,9 +118,6 @@ services:
       placement:
         constraints:
           - node.role == worker
-    configs:
-      - source: config_front
-        target: /etc/nginx/conf.d/default.conf
     networks:
       - app-private
       - internal-monitoring
@@ -263,8 +260,6 @@ configs:
     file: configs/config.json
   config_grafana:
     file: configs/grafana.ini
-  config_front:
-    file: configs/front.conf
 
 networks:
   public:
