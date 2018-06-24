@@ -3,6 +3,9 @@ debug = false
 logLevel = "ERROR"
 defaultEntryPoints = ["http", "https"]
 
+[accessLog]
+filePath = "/dev/stdout"
+
 # Generate Hash: https://www.askapache.com/online-tools/htpasswd-generator/
 [web]
 address = ":40030"
