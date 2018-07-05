@@ -56,7 +56,7 @@ services:
       - app-private
 
   api:
-    image: quay.io/perriea/needpc-api:0.0.3
+    image: quay.io/perriea/needpc-api:0.0.4
     hostname: api
     depends_on:
       - db
