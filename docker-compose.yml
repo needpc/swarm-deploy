@@ -249,6 +249,52 @@ services:
       - internal-monitoring
       - db-private
 
+  # BOT
+  mysql:
+    image: quay.io/perriea/alpine-mysql:1.0
+    hostname: mysql
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 1
+        window: 120s
+      resources:
+        limits:
+          cpus: '10.000'
+          memory: 512M
+    networks: 
+      - database
+      - bot
+    volumes:
+      - /var/lib/mysql:/var/lib/mysql
+    ports: 
+      - 3306:3306
+
+  bot:
+    image: quay.io/perriea/needpc-bot:0.0.1
+    hostname: bot
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 1
+        window: 120s
+      resources:
+        limits:
+          cpus: '10.000'
+          memory: 256M
+    env_file:
+      - bot.env
+    networks: 
+      - bot
+
+  networks: 
+    - bot: {}
+    - database: {}
+
 configs:
   config_telegraf:
     file: configs/telegraf.conf
