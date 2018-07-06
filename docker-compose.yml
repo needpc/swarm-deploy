@@ -299,10 +299,6 @@ services:
     networks: 
       - app-private
 
-  networks: 
-    - bot: {}
-    - database: {}
-
 configs:
   config_telegraf:
     file: configs/telegraf.conf
