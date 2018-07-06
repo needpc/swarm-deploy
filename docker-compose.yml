@@ -276,7 +276,7 @@ services:
       - 3306:3306
 
   bot:
-    image: quay.io/perriea/needpc-bot:0.0.1
+    image: quay.io/perriea/needpc-twitterbot:0.0.1
     hostname: bot
     depends_on:
       - mysql
