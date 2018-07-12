@@ -95,7 +95,7 @@ services:
       - internal-monitoring
 
   front:
-    image: quay.io/perriea/needpc-front:0.0.3
+    image: quay.io/perriea/needpc-front:0.0.5
     hostname: front
     depends_on:
       - api
